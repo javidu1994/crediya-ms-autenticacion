@@ -13,12 +13,13 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.math.BigDecimal;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserRepositoryAdapterTest {
-    // TODO: change four you own tests
 
     @InjectMocks
     UserRepositoryAdapter repositoryAdapter;
@@ -29,73 +30,60 @@ class UserRepositoryAdapterTest {
     @Mock
     ObjectMapper mapper;
 
+    private final Long userId = 1L;
+
+    private final UserEntity userEntity = UserEntity.builder()
+            .idUser(userId)
+            .name("javier")
+            .lastName("duarte")
+            .email("javier@gmail.com")
+            .baseSalary(new BigDecimal(7000000))
+            .build();
+
+    private final User user = User.builder()
+            .idUser(userId)
+            .name("javier")
+            .lastName("duarte")
+            .email("javier@gmail.com")
+            .baseSalary(new BigDecimal(7000000))
+            .build();
 
     @Test
-    void mustFindValueById() {
+    void shouldFindTaskById() {
 
-        UserEntity user = UserEntity.builder()
-                .idUser(1L)
-                .email("example@gmail.com")
-                .build();
-        when(repository.findById(1L)).thenReturn(Mono.just(user));
-        when(mapper.map("test", Object.class)).thenReturn("test");
+        when(mapper.map(userEntity, User.class)).thenReturn(user);
 
-        Mono<User> result = repositoryAdapter.findById(1L);
+        when(repository.findById(userId)).thenReturn(Mono.just(userEntity));
+
+        Mono<User> result = repositoryAdapter.findById(userId);
 
         StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals(user))
+                .expectNextMatches(t -> t.getIdUser().equals(userId))
                 .verifyComplete();
     }
 
     @Test
-    void mustFindAllValues() {
-        UserEntity user = UserEntity.builder()
-                .idUser(1L)
-                .email("example@gmail.com")
-                .build();
-        when(repository.findAll()).thenReturn(Flux.just(user));
-        when(mapper.map(user, UserEntity.class)).thenReturn(user);
+    void shouldFindAllTask() {
+        when(mapper.map(userEntity, User.class)).thenReturn(user);
+        when(repository.findAll()).thenReturn(Flux.just(userEntity));
 
         Flux<User> result = repositoryAdapter.findAll();
 
         StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals(user))
+                .expectNext(user)
                 .verifyComplete();
     }
 
     @Test
-    void mustFindByExample() {
-        User user = User.builder()
-                .idUser(1L)
-                .email("example@gmail.com")
-                .build();
+    void shouldSaveTask() {
+        when(mapper.map(userEntity, User.class)).thenReturn(user);
+        when(mapper.map(user, UserEntity.class)).thenReturn(userEntity);
+        when(repository.save(userEntity)).thenReturn(Mono.just(userEntity));
 
-        when(repository.findAll(any(Example.class))).thenReturn(Flux.just(user));
-        when(mapper.map(user, User.class)).thenReturn(user);
-
-        Flux<User> result = repositoryAdapter.findByExample(user);
+        Mono<User> result = repositoryAdapter.save(user);
 
         StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals(user))
-                .verifyComplete();
-    }
-
-    @Test
-    void mustSaveValue() {
-        UserEntity user = UserEntity.builder()
-                .idUser(1L)
-                .email("example@gmail.com")
-                .build();
-        when(repository.save(user)).thenReturn(Mono.just(user));
-        when(mapper.map("test", Object.class)).thenReturn("test");
-        User user1 = User.builder()
-                .idUser(1L)
-                .email("example@gmail.com")
-                .build();
-        Mono<User> result = repositoryAdapter.save(user1);
-
-        StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals(user1))
+                .expectNext(user)
                 .verifyComplete();
     }
 }

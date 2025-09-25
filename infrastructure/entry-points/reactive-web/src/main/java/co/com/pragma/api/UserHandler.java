@@ -22,7 +22,6 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 public class UserHandler {
 
     private final Logger LOGGER = LoggerFactory.getLogger(UserHandler.class);
-    private final TransactionalOperator transactionalOperator;
+    //private final TransactionalOperator transactionalOperator;
     private final UserUseCase userUseCase;
     private final Validator validator;
     private final ObjectMapper objectMapper;
@@ -41,7 +40,7 @@ public class UserHandler {
                 .flatMap(this::validateRequest)
                 .map(user -> objectMapper.convertValue(user, User.class))
                 .flatMap(userUseCase::save)
-                .as(transactionalOperator::transactional)
+                //.as(transactionalOperator::transactional)
                 .flatMap(saved -> ServerResponse.created(serverRequest.uriBuilder().path("/{idUsuario}").build(saved.getIdUser()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(saved)

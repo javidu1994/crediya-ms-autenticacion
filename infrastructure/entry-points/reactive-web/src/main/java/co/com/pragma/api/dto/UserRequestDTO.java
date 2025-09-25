@@ -20,7 +20,7 @@ public class UserRequestDTO {
     private String lastName;
 
     @NotBlank(message = "Email is required")
-    @Email(message = "Email format is invalid")
+    @Email(message = "Email format is invalid", regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
     private String email;
 
     @NotNull(message = "Base salary is required")

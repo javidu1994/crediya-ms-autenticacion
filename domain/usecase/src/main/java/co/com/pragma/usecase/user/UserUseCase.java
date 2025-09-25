@@ -22,6 +22,10 @@ public class UserUseCase {
         return userRepository.findAll();
     }
 
+    public Mono<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
     public Mono<User> update(User user) {
         return userRepository.save(user);
     }

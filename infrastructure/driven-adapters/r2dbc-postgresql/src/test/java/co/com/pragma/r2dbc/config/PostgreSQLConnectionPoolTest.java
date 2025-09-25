@@ -17,6 +17,9 @@ class PostgreSQLConnectionPoolTest {
     @Mock
     private PostgresqlConnectionProperties properties;
 
+    @Mock
+    private PostgreSQLConnectionPoolProperties poolProperties;
+
 
     @BeforeEach
     void setUp() {
@@ -28,6 +31,10 @@ class PostgreSQLConnectionPoolTest {
         when(properties.schema()).thenReturn("schema");
         when(properties.username()).thenReturn("username");
         when(properties.password()).thenReturn("password");
+
+        when(poolProperties.initialSize()).thenReturn(100);
+        when(poolProperties.maxSize()).thenReturn(1000);
+        when(poolProperties.maxIdleTime()).thenReturn(1000);
     }
 
     @Test

@@ -1,4 +1,4 @@
-/*package co.com.pragma.api.config;
+package co.com.pragma.api.config;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -22,4 +22,4 @@ public class SecurityHeadersConfig implements WebFilter {
         headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
         return chain.filter(exchange);
     }
-}*/
+}
