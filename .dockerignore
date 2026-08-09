@@ -1,0 +1,10 @@
+.git
+.gradle
+build
+**/build
+.idea
+.vscode
+*.iml
+
+Dockerfile
+README.md

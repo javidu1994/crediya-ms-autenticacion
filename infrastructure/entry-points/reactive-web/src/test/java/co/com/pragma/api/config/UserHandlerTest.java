@@ -69,8 +69,8 @@ public class UserHandlerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$[0].name").isEqualTo("Jane")
-                .jsonPath("$[0].email").isEqualTo("jane@example.com");
+                .jsonPath("$[0].name").isEqualTo("javier")
+                .jsonPath("$[0].email").isEqualTo("javier@gmail.com");
 
         verify(userUseCase).findAll();
     }
@@ -105,8 +105,8 @@ public class UserHandlerTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
                 .jsonPath("$.idUser").isEqualTo(99)
-                .jsonPath("$.name").isEqualTo("John")
-                .jsonPath("$.email").isEqualTo("john@example.com");
+                .jsonPath("$.name").isEqualTo("javier")
+                .jsonPath("$.email").isEqualTo("javier@gmail.com");
 
         verify(userUseCase).save(any(User.class));
     }
@@ -133,6 +133,4 @@ public class UserHandlerTest {
         verify(validator).validate(any(), any());
         verify(userUseCase, never()).save(any());
     }
-
-
 }

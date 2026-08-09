@@ -1,6 +1,7 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.config.UserPath;
+import co.com.pragma.api.dto.UserRequestDTO;
 import co.com.pragma.model.user.User;
 import co.com.pragma.usecase.user.UserUseCase;
 import org.assertj.core.api.Assertions;
@@ -27,55 +28,83 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.web.reactive.function.BodyInserters.fromValue;
 
 @ContextConfiguration(classes = {RouterRest.class, UserHandler.class})
 @EnableConfigurationProperties(UserPath.class)
 @WebFluxTest
 class RouterRestTest {
 
-    @Autowired
     private WebTestClient webTestClient;
+    private UserHandler userHandler;
+    private UserPath userPath;
 
-    @Test
-    void testListenGETUseCase() {
-        webTestClient.get()
-                .uri("/api/usecase/path")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
-                        }
-                );
+    @BeforeEach
+    void setUp() {
+        // Mock dependencies
+        userHandler = Mockito.mock(UserHandler.class);
+        userPath = Mockito.mock(UserPath.class);; // Lambda for interface UserPath
+
+        // Create RouterRest instance with mocks
+        RouterRest routerRest = new RouterRest(userPath, userHandler);
+
+        RouterFunction<ServerResponse> routerFunction = routerRest.routerFunction(userHandler);
+
+        webTestClient = WebTestClient.bindToRouterFunction(routerFunction).build();
     }
 
     @Test
-    void testListenGETOtherUseCase() {
+    void shouldRouteToGetAllUsers() {
+        User user = User.builder()
+                .name("javier")
+                .lastName("duarte")
+                .email("javier@gmail.com")
+                .build();
+
+
+        when(userHandler.listenGetAllUsers(any())).thenReturn(
+                ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(Flux.just(user), User.class)
+        );
+
         webTestClient.get()
-                .uri("/api/otherusercase/path")
+                .uri("/users")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
-                        }
-                );
+                .expectBody()
+                .jsonPath("$[0].name").isEqualTo("javier")
+                .jsonPath("$[0].email").isEqualTo("javier@gmail.com");
     }
 
     @Test
-    void testListenPOSTUseCase() {
+    void shouldRouteToSaveUser() {
+        User savedUser = User.builder()
+                .name("javier")
+                .lastName("duarte")
+                .email("javier@gmail.com")
+                .build();
+        UserRequestDTO requestDTO = UserRequestDTO.builder()
+                .name("javier")
+                .lastName("duarte")
+                .email("javier@gmail.com")
+                .build();
+
+        when(userHandler.listenSaveUser(any())).thenReturn(
+                ServerResponse.created(null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(Mono.just(savedUser), User.class)
+        );
+
         webTestClient.post()
-                .uri("/api/usecase/otherpath")
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue("")
+                .uri("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(fromValue(requestDTO))
                 .exchange()
-                .expectStatus().isOk()
-                .expectBody(String.class)
-                .value(userResponse -> {
-                            Assertions.assertThat(userResponse).isEmpty();
-                        }
-                );
+                .expectStatus().isCreated()
+                .expectBody()
+                .jsonPath("$.name").isEqualTo("javier")
+                .jsonPath("$.email").isEqualTo("javier@gmail.com");
     }
 }

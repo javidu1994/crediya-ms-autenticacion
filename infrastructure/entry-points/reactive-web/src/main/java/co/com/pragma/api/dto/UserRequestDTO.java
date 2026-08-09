@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
+@ToString
 public class UserRequestDTO {
 
     @NotBlank(message = "Name is required")
@@ -28,10 +29,19 @@ public class UserRequestDTO {
     @DecimalMax(value = "15000000.0", inclusive = true, message = "Base salary must be less than or equal to 15000000")
     private BigDecimal baseSalary;
 
+    @NotBlank(message = "DNI is required")
+    private String dni;
+
     @NotNull(message = "Birthdate is required")
     private LocalDate birthdate;
 
     private String address;
 
     private String phoneNumber;
+
+    @NotBlank(message = "Password is required")
+    private String password;
+
+    @NotNull(message = "Role is required")
+    private Long idRol;
 }

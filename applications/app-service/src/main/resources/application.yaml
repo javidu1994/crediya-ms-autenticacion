@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${APP_PORT}
 spring:
   application:
     name: "crediya-ms-autenticacion"
@@ -30,24 +30,53 @@ cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
 springdoc:
   swagger-ui:
-    path: "/api/doc/swagger-ui.html"
+    path: "/crediya-ms-autenticacion/swagger-ui.html"
   api-docs:
     path: "/api/doc/api-docs"
 routes:
   paths:
     users: "/api/v1/users"
-    usersById: "/api/v1/users/{id}"
+    users-exist: "/exist"
+    auth: "/api/v1/auth"
+    auth-login: "/login"
 adapters:
   r2dbc:
-    host: "localhost"
-    port: 5432
-    database: "autenticacion"
+    host: ${DB_HOST}
+    port: ${DB_PORT}
+    database: ${DB_NAME}
     schema: "public"
-    username: "postgres"
-    password: "javidu"
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     pool:
       initial-size: 12
       max-size: 15
       max-idle-time: 10
+    #DB Local
+    #username: "postgres"
+    #password: "javidu"
+    #database: "autenticacion"
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          reactive: "DEBUG"
+          server: "DEBUG"
+        r2dbc: "DEBUG"
+        data:
+          r2dbc: "DEBUG"
+        security: "DEBUG"
+        oauth2: "DEBUG"
+    io:
+      r2dbc:
+        postgresql:
+          PARAM: "DEBUG"
+        spi: "DEBUG"
+    reactor.netty.http.server: "DEBUG"
+    reactor.netty.http.client: "DEBUG"
+    co:
+      com:
+        pragma:
+          autenticacion: "DEBUG"
 jwt:
   json-exp-roles: "/roles"

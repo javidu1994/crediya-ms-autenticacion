@@ -20,4 +20,7 @@ public class UserDTO {
     private LocalDate birthdate;
     private String address;
     private String phone;
+    private String dni;
+    private Long idRol;
+    private String token;
 }

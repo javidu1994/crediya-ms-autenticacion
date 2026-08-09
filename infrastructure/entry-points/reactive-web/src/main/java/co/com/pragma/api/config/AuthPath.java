@@ -7,8 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "routes.paths")
-public class UserPath {
+public class AuthPath {
 
-    private String users;
-    private String usersExist;
+    private String auth;
+    private String authLogin;
 }

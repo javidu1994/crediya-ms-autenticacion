@@ -11,16 +11,18 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 @ContextConfiguration(classes = {RouterRest.class, UserHandler.class})
 @WebFluxTest
-@Import({CorsConfig.class, SecurityHeadersConfig.class})
+@Import({CorsConfig.class})
 class ConfigTest {
 
     @Autowired
     private WebTestClient webTestClient;
 
+    private UserPath userPath;
+
     @Test
     void corsConfigurationShouldAllowOrigins() {
         webTestClient.get()
-                .uri("/api/usecase/path")
+                .uri(userPath.getUsers())
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().valueEquals("Content-Security-Policy",

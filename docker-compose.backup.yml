@@ -1,0 +1,53 @@
+
+services:
+
+  app:
+
+    build:
+      context: .
+      target: ${STAGE}
+      dockerfile: deployment/Dockerfile
+
+    container_name: crediya-ms-autenticacion
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    environment:
+      STAGE: ${STAGE}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      APP_PORT: ${APP_PORT}
+      # HOST_API: ${HOST_API}
+    env_file:
+      - .env
+  db:
+    image: postgres:16
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    container_name: ${DB_HOST} #Coloco un solo nombre host porque el servidor de BD es compartido para todos los micros
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+  pgAdmin:
+    depends_on:
+      - db
+    image: dpage/pgadmin4:7.8
+    ports:
+      - "9000:80"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD=123456
+      - PGADMIN_DEFAULT_EMAIL=superman@google.com
+
+volumes:
+  postgres-db:
+      external: false
+  pgadmin:
+      external: false

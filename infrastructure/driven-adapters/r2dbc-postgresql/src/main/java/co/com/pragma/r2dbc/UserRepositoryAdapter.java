@@ -71,4 +71,16 @@ public class UserRepositoryAdapter extends ReactiveAdapterOperations<User, UserE
                 .doOnNext(u -> LOGGER.debug("findByEmail with param: {} -> {}", email, u));
     }
 
+    @Override
+    public Mono<Boolean> existUserByDni(String dni) {
+        User user = User.builder()
+                .dni(dni)
+                .build();
+        return super.findByExample(user)
+                .doOnNext(exists -> LOGGER.debug("existUserByDni with param: {} -> {}", dni, exists))
+                .next()
+                .map(u -> true)
+                .defaultIfEmpty(false);
+    }
+
 }
